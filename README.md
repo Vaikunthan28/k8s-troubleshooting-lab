@@ -111,6 +111,6 @@ PRs welcome! To add a new scenario:
 
 ## Author
 
-Built by [Vaikunthan Rajaratnam](https://linkedin.com/in/YOUR_PROFILE) — DevOps / Cloud Engineer, Sydney Australia.
+Built by [Vaikunthan Paramananthasivam](https://www.linkedin.com/in/vaik/) — DevOps / Cloud Engineer, Sydney Australia.
 
 AWS SAA | CKA | RHCSA
