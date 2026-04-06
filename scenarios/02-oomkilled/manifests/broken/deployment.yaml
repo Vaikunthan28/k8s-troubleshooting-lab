@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-processor
+  namespace: lab
+  labels:
+    app: data-processor
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: data-processor
+  template:
+    metadata:
+      labels:
+        app: data-processor
+    spec:
+      containers:
+        - name: data-processor
+          image: busybox:1.35
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "data-processor starting — processing large dataset..."
+              # Simulate memory-intensive workload (~150MB) — exceeds the 64Mi limit
+              dd if=/dev/zero bs=1M count=150 2>/dev/null | tail -c 1
+              echo "Done. Sleeping."
+              sleep 3600
+          resources:
+            requests:
+              cpu: 100m
+              memory: 32Mi
+            limits:
+              cpu: 500m
+              memory: 64Mi    # Too low — process needs ~150MB

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-data-pvc
+  namespace: lab
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard    # 'standard' is the default StorageClass in kind
+  resources:
+    requests:
+      storage: 1Gi

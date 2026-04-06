@@ -1,0 +1,51 @@
+name: Validate manifests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.29.0'
+
+      - name: Install kubeval
+        run: |
+          wget -q https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
+          tar xf kubeval-linux-amd64.tar.gz
+          sudo mv kubeval /usr/local/bin/
+
+      - name: Validate all broken manifests
+        run: |
+          echo "Validating broken manifests..."
+          find scenarios/*/manifests/broken -name "*.yaml" | while read f; do
+            echo "  Checking: $f"
+            kubeval --ignore-missing-schemas "$f" || true
+          done
+
+      - name: Validate all solution manifests
+        run: |
+          echo "Validating solution manifests..."
+          find scenarios/*/manifests/solution -name "*.yaml" | while read f; do
+            echo "  Checking: $f"
+            kubeval --ignore-missing-schemas "$f"
+          done
+
+      - name: Check all scripts are executable
+        run: |
+          find scenarios -name "*.sh" | while read f; do
+            if [ ! -x "$f" ]; then
+              echo "ERROR: $f is not executable"
+              exit 1
+            fi
+          done
+          echo "All scripts are executable."

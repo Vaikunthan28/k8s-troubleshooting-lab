@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-api
+  namespace: lab
+  labels:
+    app: payments-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: payments-api
+  template:
+    metadata:
+      labels:
+        app: payments-api
+    spec:
+      containers:
+        - name: payments-api
+          image: busybox:1.35
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Starting payments-api..."
+              if [ -z "$DATABASE_URL" ]; then
+                echo "FATAL: DATABASE_URL is not set. Cannot start."
+                exit 1
+              fi
+              if [ -z "$JWT_SECRET" ]; then
+                echo "FATAL: JWT_SECRET is not set. Cannot start."
+                exit 1
+              fi
+              echo "Config OK. Server running on :8080"
+              sleep 3600
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: payments-config    # Does not exist
+                  key: database_url
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: payments-secrets   # Does not exist
+                  key: jwt_secret
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
