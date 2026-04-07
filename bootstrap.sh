@@ -7,7 +7,7 @@ set -e
 #  Usage: curl -sSL <raw-url> | bash
 # ============================================================
 
-REPO_URL="https://github.com/YOUR_USERNAME/k8s-troubleshooting-lab.git"
+REPO_URL="https://github.com/Vaikunthan28/k8s-troubleshooting-lab.git"
 CLUSTER_NAME="k8s-lab"
 LAB_DIR="$HOME/k8s-troubleshooting-lab"
 
