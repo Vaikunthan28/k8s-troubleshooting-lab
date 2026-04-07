@@ -17,19 +17,22 @@ spec:
     spec:
       containers:
         - name: data-processor
-          image: busybox:1.35
-          command: ["sh", "-c"]
+          image: python:3.11-slim
+          command: ["python3", "-c"]
           args:
             - |
-              echo "data-processor starting — processing large dataset..."
-              # Simulate memory-intensive workload (~150MB) — exceeds the 64Mi limit
-              dd if=/dev/zero bs=1M count=150 2>/dev/null | tail -c 1
-              echo "Done. Sleeping."
-              sleep 3600
+              import time
+              print("data-processor starting — processing large dataset...", flush=True)
+              print("Allocating 200MB in memory to simulate workload...", flush=True)
+              # Allocate and HOLD 200MB — exceeds the 64Mi limit
+              # Using python bytearray so memory is held (dd releases it too fast)
+              data = bytearray(200 * 1024 * 1024)
+              print("Memory allocated and held. Processing...", flush=True)
+              time.sleep(3600)
           resources:
             requests:
               cpu: 100m
               memory: 32Mi
             limits:
               cpu: 500m
-              memory: 64Mi    # Too low — process needs ~150MB
+              memory: 64Mi    # Too low — process needs ~200MB, triggers OOMKill

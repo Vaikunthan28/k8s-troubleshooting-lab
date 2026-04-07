@@ -17,18 +17,20 @@ spec:
     spec:
       containers:
         - name: data-processor
-          image: busybox:1.35
-          command: ["sh", "-c"]
+          image: python:3.11-slim
+          command: ["python3", "-c"]
           args:
             - |
-              echo "data-processor starting — processing large dataset..."
-              dd if=/dev/zero bs=1M count=150 2>/dev/null | tail -c 1
-              echo "Done. Sleeping."
-              sleep 3600
+              import time
+              print("data-processor starting — processing large dataset...", flush=True)
+              print("Allocating 200MB in memory to simulate workload...", flush=True)
+              data = bytearray(200 * 1024 * 1024)
+              print("Memory allocated and held. Processing...", flush=True)
+              time.sleep(3600)
           resources:
             requests:
               cpu: 100m
-              memory: 128Mi    # Increased
+              memory: 128Mi   # Increased — reflects actual usage
             limits:
               cpu: 500m
-              memory: 256Mi    # Increased — gives headroom above actual usage
+              memory: 256Mi   # Increased — gives 50% headroom above 200MB usage
